@@ -31,7 +31,9 @@
   
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
 
-<meta name="generator" content="Hexo 7.3.0"></head>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head>
 
 <body>
   <div id="container">
@@ -110,7 +112,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2025/04/13/hello-world/" data-id="cm9fq70nn00001sv85tuqesty" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2025/04/13/hello-world/" data-id="cm9fr50ky0000awv8d9739k6t" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -144,31 +146,45 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h1 id="生存分析重现工作报告"><a href="#生存分析重现工作报告" class="headerlink" title="生存分析重现工作报告"></a>生存分析重现工作报告</h1><h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h2><p>本次工作旨在基于 IBM Telco 客户流失数据，使用 Python 在服务器 Notebook 环境中重现 Databricks 环境下的生存分析工作。主要工作内容包括：</p>
+        <h1 id="生存分析重现工作报告"><a href="#生存分析重现工作报告" class="headerlink" title="生存分析重现工作报告"></a>生存分析重现工作报告</h1><h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h2><p>本报告基于 IBM Telco 客户流失数据，使用 Python 在服务器 Notebook 环境中重现 Databricks 环境下的生存分析工作。报告分为以下五个主要部分，每一部分详细描述了数据加载预处理、模型构建、结果分析及图表展示等过程。报告的总体框架如下：</p>
 <ol>
 <li><p><strong>数据加载与预处理</strong>  </p>
 <ul>
-<li>下载并加载 IBM Telco 客户流失数据（CSV 格式）。</li>
-<li>对数据进行清洗与转换，生成“青铜级”（原始数据）和“银级”（衍生数据）表。</li>
+<li>下载并加载 IBM Telco 客户流失数据（CSV 格式）。  </li>
+<li>对数据进行清洗与转换，生成“青铜级”（原始数据）和“银级”（衍生数据）表。  </li>
 <li>使用 Spark SQL 创建数据库和 Parquet 表（不依赖 Databricks 特有的 Delta Lake）。</li>
 </ul>
 </li>
 <li><p><strong>Kaplan-Meier 生存分析</strong>  </p>
 <ul>
-<li>利用 lifelines 库对银级数据进行非参数生存分析，拟合总体生存曲线与分组生存曲线。</li>
-<li>计算中位生存时间。</li>
+<li>利用 lifelines 库对银级数据进行非参数生存分析，拟合总体生存曲线与分组生存曲线。  </li>
+<li>计算中位生存时间。  </li>
 <li>利用 Log-Rank 检验比较不同组间的生存曲线差异，并从模型中提取生存概率数据。</li>
 </ul>
 </li>
 <li><p><strong>Cox 比例风险模型分析</strong>  </p>
 <ul>
-<li>对银级数据进行 One-Hot 编码，然后构造用于 Cox 模型的输入数据框。</li>
-<li>利用 lifelines 库的 CoxPHFitter 拟合多变量生存模型，输出模型摘要与风险比图。</li>
+<li>对银级数据进行 One-Hot 编码，构造用于 Cox 模型的输入数据框。  </li>
+<li>利用 lifelines 库的 CoxPHFitter 拟合多变量生存模型，输出模型摘要与风险比图。  </li>
 <li>检查比例风险假设，包括统计检验和绘制 Schoenfeld 残差图，以及 Log-log Kaplan-Meier 曲线的绘制。</li>
 </ul>
 </li>
+<li><p><strong>Accelerated Failure Time (AFT) 模型分析</strong>  </p>
+<ul>
+<li>使用 Log-Logistic AFT 模型对银级数据进行参数化生存分析，估计客户生存时间。  </li>
+<li>输出模型中各变量的回归系数、风险加速因子和中位生存时间。  </li>
+<li>绘制模型拟合图和 Log-log Kaplan-Meier 曲线，以验证模型假设的成立情况。</li>
+</ul>
+</li>
+<li><p><strong>Customer Lifetime Value (CLTV) 分析</strong>  </p>
+<ul>
+<li>基于 Cox 模型预测的生存概率，计算每月预期利润，并进一步利用折现方法计算每月利润的净现值（NPV）。  </li>
+<li>累计各月的 NPV 形成累计 CLTV，用以衡量客户生命周期价值。  </li>
+<li>绘制累计 NPV 条形图及生存概率曲线，为决策和营销策略提供数据支持。</li>
+</ul>
+</li>
 </ol>
-<p>整个过程旨在帮助大家理解生存分析的基本原理、模型拟合方法以及如何通过可视化图表解读模型结果。下面依次详细介绍各部分工作内容。</p>
+<p>整个过程旨在帮助理解生存分析的基本原理、模型拟合方法以及如何通过可视化图表解读模型结果。下面依次详细介绍各部分工作内容。</p>
 <hr>
 <h2 id="2-数据加载与预处理"><a href="#2-数据加载与预处理" class="headerlink" title="2. 数据加载与预处理"></a>2. 数据加载与预处理</h2><h3 id="2-1-代码主要思路"><a href="#2-1-代码主要思路" class="headerlink" title="2.1 代码主要思路"></a>2.1 代码主要思路</h3><ul>
 <li><p><strong>创建 SparkSession</strong><br>使用 <code>SparkSession.builder</code> 创建 Spark 会话，并设置日志级别为 ERROR，避免干扰输出信息。</p>
@@ -209,15 +225,12 @@
 <li>$ d_i $ 为时间 $ t_i $ 时发生事件的个数  </li>
 <li>$ n_i $ 为 $ t_i $ 时处于风险集中的个体数</li>
 </ul>
-<p>对应 LaTeX 代码：  </p>
-<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">S(t) = <span class="keyword">\prod</span><span class="built_in">_</span>&#123;t<span class="built_in">_</span>i <span class="keyword">\leq</span> t&#125; <span class="keyword">\left</span>( 1 - <span class="keyword">\frac</span>&#123;d<span class="built_in">_</span>i&#125;&#123;n<span class="built_in">_</span>i&#125; <span class="keyword">\right</span>)</span><br></pre></td></tr></table></figure>
-
 <h3 id="3-3-输出结果解析及图像解读"><a href="#3-3-输出结果解析及图像解读" class="headerlink" title="3.3 输出结果解析及图像解读"></a>3.3 输出结果解析及图像解读</h3><ul>
 <li><p><strong>中位生存时间输出</strong><br>输出 “中位生存时间: 34.0”，意味着 50% 的客户在 34 个月内（或超过 34 个月）仍保持订阅状态。</p>
 </li>
 <li><p><strong>Log-Rank 检验输出</strong><br>根据不同协变量（如 gender、onlinesecurity）的 Log-Rank 检验结果，可以判断不同组间的生存曲线是否显著不同。<br>例如，对于 “onlinesecurity” 分组，p 值非常低（小于 0.005），说明该协变量对生存曲线有显著影响。</p>
 </li>
-<li><p><strong>Kaplan-Meier 生存曲线图</strong><br>图中的横轴 “Survival Time (Months)” 表示生存时间（月），纵轴 “Survival Probability” 表示生存概率。曲线起点在 (0, 1.0) 表示在 t&#x3D;0 时生存概率为 100%，随着时间推移曲线逐渐下降。注意观察不同协变量分组的曲线相对位置和交叉情况，以判断分组之间的生存差异。</p>
+<li><p><strong>Kaplan-Meier 生存曲线图</strong><br>图中的横轴 “Survival Time (Months)” 表示生存时间（月），纵轴 “Survival Probability” 表示生存概率。曲线起点在 (0, 1.0) 表示在 t&#x3D;0 时生存概率为 100%，随着时间推移曲线逐渐下降。</p>
 <p><img src="/./images/2.1.png" alt="数据分析图表"><br><img src="/./images/2.2.png" alt="数据分析图表"><br><img src="/./images/2.3.png" alt="数据分析图表"></p>
 </li>
 </ul>
@@ -236,8 +249,6 @@
 <li>$ \beta $ 为回归系数  </li>
 <li>$ X $ 为协变量向量</li>
 </ul>
-<p>对应 LaTeX 代码：</p>
-<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">h(t <span class="keyword">\mid</span> X) = h<span class="built_in">_</span>0(t) <span class="keyword">\exp</span>(<span class="keyword">\beta</span> X)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p><strong>模型输出解析</strong><br>模型摘要输出中包含：</p>
 <ul>
@@ -260,7 +271,7 @@
 <h3 id="4-2-输出结果解析及图像解读"><a href="#4-2-输出结果解析及图像解读" class="headerlink" title="4.2 输出结果解析及图像解读"></a>4.2 输出结果解析及图像解读</h3><ul>
 <li><p><strong>模型摘要输出</strong><br>模型摘要显示例如：  </p>
 <ul>
-<li><code>dependents_Yes</code> 的回归系数为 -0.33，对应风险比 ( \exp(-0.33) \approx 0.72 )（风险降低 28%）；  </li>
+<li><code>dependents_Yes</code> 的回归系数为 -0.33，对应风险比 $ \exp(-0.33) \approx 0.72 $（风险降低 28%）；  </li>
 <li>所有变量的 p 值均小于 0.005，说明它们在统计上均显著。  </li>
 <li>另外，模型的 Concordance 值为 0.64，说明模型在预测时序上具有一定的准确性。</li>
 </ul>
@@ -269,7 +280,7 @@
 </li>
 <li><p><strong>比例风险假设检验及 Schoenfeld 残差图</strong><br>检验输出指出部分变量（如 internetservice_DSL、onlinebackup_Yes、techsupport_Yes）的 p 值小于 0.05，提示这些变量可能违反比例风险假设。<br>Schoenfeld 残差图会展示各变量残差随时间的变化趋势，如果趋势线不平稳，则说明假设可能不成立。<br><img src="/images/3.2.png" alt="数据分析图表"><br><img src="/images/3.3.png" alt="数据分析图表"><br><img src="/images/3.4.png" alt="数据分析图表"><br><img src="/images/3.5.png" alt="数据分析图表"></p>
 </li>
-<li><p><strong>Log-log KM 曲线图</strong><br>绘制的 log-log Kaplan-Meier 曲线，其横轴是 (\log(\text{Time}))，纵轴是 (\log(-\log(S(t))))。  </p>
+<li><p><strong>Log-log KM 曲线图</strong><br>绘制的 log-log Kaplan-Meier 曲线，其横轴是 $\log(\text{Time})$，纵轴是 $\log(-\log(S(t)))$。  </p>
 <ul>
 <li>如果不同分组的曲线平行，则表示各组间的生存函数比例关系稳定，比例风险假设得以满足；  </li>
 <li>如果曲线明显交叉或不平行，则表明比例风险假设可能存在问题。<br><img src="/./images/3.6.png" alt="数据分析图表"><br><img src="/./images/3.7.png" alt="数据分析图表"><br><img src="/./images/3.8.png" alt="数据分析图表"><br><img src="/./images/3.9.png" alt="数据分析图表"></li>
@@ -277,39 +288,7 @@
 </li>
 </ul>
 <hr>
-<h2 id="5-总结与建议"><a href="#5-总结与建议" class="headerlink" title="5. 总结与建议"></a>5. 总结与建议</h2><p>本次工作通过详细的代码重现展示了数据加载与预处理、Kaplan-Meier 非参数生存分析及 Cox 比例风险模型的拟合与检验流程。总结如下：</p>
-<ol>
-<li><p><strong>数据预处理</strong>  </p>
-<ul>
-<li>通过下载数据、Spark 自动推断 schema 及数据转换，生成了干净的原始数据（青铜级）和聚焦于特定条件（”Month-to-month” 和提供互联网服务）的银级数据。</li>
-</ul>
-</li>
-<li><p><strong>Kaplan-Meier 分析</strong>  </p>
-<ul>
-<li>利用 lifelines 库，拟合总体和分组生存曲线，并计算中位生存时间（例如 34 个月）。  </li>
-<li>通过 Log-Rank 检验和生存函数表，帮助我们评估不同协变量对生存率的影响。</li>
-</ul>
-</li>
-<li><p><strong>Cox 比例风险模型</strong>  </p>
-<ul>
-<li>通过 One-Hot 编码和构造模型输入，利用 Cox 模型揭示各协变量对客户流失风险的影响。  </li>
-<li>模型输出提供详细统计信息和风险比，指导业务上如何解读变量影响。  </li>
-<li>检验比例风险假设的过程揭示了部分变量可能存在假设偏离，需要进一步优化模型。</li>
-</ul>
-</li>
-<li><p><strong>图表解读</strong>  </p>
-<ul>
-<li>Kaplan-Meier 生存曲线：横轴（Survival Time (Months)）和纵轴（Survival Probability）直观展示客户生存率随时间的变化。  </li>
-<li>风险比图：展示各协变量的风险比变化，帮助我们判断哪些因素对风险有显著影响。  </li>
-<li>Log-log Kaplan-Meier 曲线：通过对数变换后检测曲线平行性，验证比例风险假设是否成立。</li>
-</ul>
-</li>
-</ol>
-<h3 id="额外说明"><a href="#额外说明" class="headerlink" title="额外说明"></a>额外说明</h3><p>在整个数据分析过程中，公式和统计检验起到了关键作用。例如，Kaplan-Meier 生存函数公式<br>$$<br>S(t) &#x3D; \prod_{t_i \leq t} \left(1 - \frac{d_i}{n_i}\right)<br>$$<br>帮助我们计算各时点的生存概率；Cox 模型公式<br>$$<br>h(t \mid X) &#x3D; h_0(t) \exp(\beta X)<br>$$<br>则为多变量风险评估提供了理论基础。</p>
-<p>通过对代码输出和图表的综合分析，我们可以对客户的流失风险、不同协变量的影响有了较为清晰的认识，为后续的业务决策（如客户保留策略、市场推广等）提供了数据支撑。</p>
-<p>下面给出第四块（Accelerated Failure Time 模型）和第五块（Customer Lifetime Value 分析）代码的详细报告。报告内容包括对代码实现过程、关键思路、输出结果以及图形解读的详细说明，所有注释和文本输出均为中文，而图表的图名、横纵坐标等均为英文。如果报告中出现公式，其 LaTeX 代码也会给出。</p>
-<hr>
-<h1 id="第四块报告-——-Accelerated-Failure-Time-AFT-模型分析"><a href="#第四块报告-——-Accelerated-Failure-Time-AFT-模型分析" class="headerlink" title="第四块报告 —— Accelerated Failure Time (AFT) 模型分析"></a>第四块报告 —— Accelerated Failure Time (AFT) 模型分析</h1><h2 id="1-代码目的"><a href="#1-代码目的" class="headerlink" title="1. 代码目的"></a>1. 代码目的</h2><p>本部分代码旨在使用 Accelerated Failure Time 模型中的 Log-Logistic 分布来对客户流失数据进行分析。主要工作包括：</p>
+<h2 id="5-Accelerated-Failure-Time-AFT-模型分析"><a href="#5-Accelerated-Failure-Time-AFT-模型分析" class="headerlink" title="5. Accelerated Failure Time (AFT) 模型分析"></a>5. Accelerated Failure Time (AFT) 模型分析</h2><h3 id="5-1-代码目的"><a href="#5-1-代码目的" class="headerlink" title="5.1 代码目的"></a>5.1 代码目的</h3><p>本部分旨在使用 Accelerated Failure Time 模型中的 Log-Logistic 分布来对客户流失数据进行分析。主要工作包括：</p>
 <ol>
 <li>从 Spark 中加载“银级数据”（经过预处理后的数据），转换为 Pandas DataFrame。</li>
 <li>对指定的分类变量进行 One-Hot 编码，生成虚拟变量。</li>
@@ -317,13 +296,13 @@
 <li>利用 Log-Logistic AFT 模型对数据进行拟合，输出模型统计摘要并绘制模型拟合图。</li>
 <li>通过辅助函数绘制 Log-log 转换后的 Kaplan-Meier 曲线，检查模型假设。</li>
 </ol>
-<h2 id="2-关键思路与实现"><a href="#2-关键思路与实现" class="headerlink" title="2. 关键思路与实现"></a>2. 关键思路与实现</h2><h3 id="2-1-数据加载和-One-Hot-编码"><a href="#2-1-数据加载和-One-Hot-编码" class="headerlink" title="2.1 数据加载和 One-Hot 编码"></a>2.1 数据加载和 One-Hot 编码</h3><ul>
+<h3 id="5-2-关键思路与实现"><a href="#5-2-关键思路与实现" class="headerlink" title="5.2 关键思路与实现"></a>5.2 关键思路与实现</h3><h4 id="5-2-1-数据加载和-One-Hot-编码"><a href="#5-2-1-数据加载和-One-Hot-编码" class="headerlink" title="5.2.1 数据加载和 One-Hot 编码"></a>5.2.1 数据加载和 One-Hot 编码</h4><ul>
 <li><p><strong>数据加载</strong><br>代码使用 <code>spark.table(&quot;silver_monthly_customers&quot;).toPandas()</code> 将 Spark 中注册的银级数据加载为 Pandas DataFrame，方便 lifelines 库处理数据。</p>
 </li>
 <li><p><strong>One-Hot 编码</strong><br>为了使分类变量能够在模型中使用，代码利用 <code>pd.get_dummies</code> 对 8 个变量（partner, multiplelines, internetservice, onlinesecurity, onlinebackup, deviceprotection, techsupport, paymentmethod）进行 One-Hot 编码。<br>输出中显示编码后的数据集拥有 32 个字段，其中新生成的虚拟变量名称形如 <code>partner_Yes</code>、<code>multiplelines_Yes</code>、<code>internetservice_DSL</code> 等。该步骤确保后续模型构造时变量维度一致。</p>
 </li>
 </ul>
-<h3 id="2-2-构造模型数据框"><a href="#2-2-构造模型数据框" class="headerlink" title="2.2 构造模型数据框"></a>2.2 构造模型数据框</h3><ul>
+<h4 id="5-2-2-构造模型数据框"><a href="#5-2-2-构造模型数据框" class="headerlink" title="5.2.2 构造模型数据框"></a>5.2.2 构造模型数据框</h4><ul>
 <li>根据需求，从编码后的数据集中选取模型关键变量：  <ul>
 <li>事件指示变量：<code>churn</code>  </li>
 <li>持续时间变量：<code>tenure</code>  </li>
@@ -332,53 +311,61 @@
 </li>
 <li>这里将 <code>churn</code> 转换为 float 类型，符合模型输入要求。</li>
 </ul>
-<h3 id="2-3-模型拟合"><a href="#2-3-模型拟合" class="headerlink" title="2.3 模型拟合"></a>2.3 模型拟合</h3><ul>
-<li><strong>模型选用</strong><br>使用 lifelines 库中的 <code>LogLogisticAFTFitter()</code> 来构建 Log-Logistic AFT 模型。  </li>
-<li><strong>模型公式</strong><br>AFT 模型假定个体生存时间 ( T ) 与协变量 ( X ) 的关系可以表示为：<br>[<br>\log(T) &#x3D; \mu + \beta X + \sigma \epsilon<br>]<br>其中，(\mu) 为截距，(\beta) 为协变量系数，(\sigma) 为尺度参数，(\epsilon) 是随机误差项（在 Log-Logistic 模型中满足对数-逻辑分布）。<br>对应的 LaTeX 代码：<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">\log</span>(T) = <span class="keyword">\mu</span> + <span class="keyword">\beta</span> X + <span class="keyword">\sigma</span> <span class="keyword">\epsilon</span></span><br></pre></td></tr></table></figure></li>
-<li><strong>模型输出</strong><br>调用 <code>aft.fit(...)</code> 进行模型拟合后，通过 <code>aft.print_summary()</code> 输出模型统计摘要。输出摘要显示了每个变量的回归系数（coef）、标准误（se(coef)）、风险加速因子 ( \exp(\text{coef}) ) 以及其置信区间和统计显著性（z 值、p 值等）。<ul>
-<li>例如，<code>internetservice_DSL</code> 的 coef 为 0.38，对应 ( \exp(0.38)\approx 1.47 ) ，表示当互联网服务为 DSL 时，对应的加速因子为 1.47，即相对于基线，其生存时间缩短的比例大约为 1&#x2F;1.47。</li>
+<h4 id="5-2-3-模型拟合"><a href="#5-2-3-模型拟合" class="headerlink" title="5.2.3 模型拟合"></a>5.2.3 模型拟合</h4><ul>
+<li><p><strong>模型选用</strong><br>使用 lifelines 库中的 <code>LogLogisticAFTFitter()</code> 来构建 Log-Logistic AFT 模型。  </p>
+</li>
+<li><p><strong>模型公式</strong><br>AFT 模型假定个体生存时间 $ T $ 与协变量 $ X $ 的关系可以表示为：<br>$$<br>\log(T) &#x3D; \mu + \beta X + \sigma \epsilon<br>$$<br>其中，$\mu$ 为截距，$\beta$ 为协变量系数，$\sigma$ 为尺度参数，$\epsilon$ 是随机误差项（在 Log-Logistic 模型中满足对数-逻辑分布）。  </p>
+</li>
+<li><p><strong>模型输出</strong><br>调用 <code>aft.fit(...)</code> 进行模型拟合后，通过 <code>aft.print_summary()</code> 输出模型统计摘要。输出摘要显示了每个变量的回归系数（coef）、标准误（se(coef)）、风险加速因子 $ \exp(\text{coef}) $ 以及其置信区间和统计显著性（z 值、p 值等）。</p>
+<ul>
+<li>例如，<code>internetservice_DSL</code> 的 coef 为 0.38，对应 $ \exp(0.38)\approx 1.47 $ ，表示当互联网服务为 DSL 时，对应的加速因子为 1.47，即相对于基线，其生存时间缩短的比例大约为 1&#x2F;1.47。</li>
 </ul>
 </li>
-<li><strong>中位生存时间</strong><br>模型中计算出的中位生存时间最初以 log-odds 形式输出，代码使用 <code>np.exp(aft.median_survival_time_)</code> 将其转换为实际的时间值，本例中输出为 135.51（单位为月份）。</li>
+<li><p><strong>中位生存时间</strong><br>模型中计算出的中位生存时间最初以 log-odds 形式输出，代码使用 <code>np.exp(aft.median_survival_time_)</code> 将其转换为实际的时间值，本例中输出为 135.51（单位为月份）。</p>
+</li>
 </ul>
-<h3 id="2-4-模型拟合图"><a href="#2-4-模型拟合图" class="headerlink" title="2.4 模型拟合图"></a>2.4 模型拟合图</h3><ul>
+<h4 id="5-2-4-模型拟合图"><a href="#5-2-4-模型拟合图" class="headerlink" title="5.2.4 模型拟合图"></a>5.2.4 模型拟合图</h4><ul>
 <li>调用 <code>aft.plot()</code> 绘制模型拟合结果图。  </li>
 <li>图表中的横轴为 “Duration (Months)”（持续时间），纵轴为 “Log(Hazard)”（对数风险），图表标题为 “Log-Logistic AFT Model Fit”。  </li>
 <li>该图帮助我们直观观察模型拟合情况，如回归线的形态及不同时间段的风险变化趋势。</li>
 </ul>
-<h3 id="2-5-验证模型假设-——-Log-log-Kaplan-Meier-曲线"><a href="#2-5-验证模型假设-——-Log-log-Kaplan-Meier-曲线" class="headerlink" title="2.5 验证模型假设 —— Log-log Kaplan-Meier 曲线"></a>2.5 验证模型假设 —— Log-log Kaplan-Meier 曲线</h3><ul>
-<li>为验证 AFT 模型的假设（例如比例赔率假设），代码首先利用 Kaplan-Meier 方法拟合总体生存函数，得到生存曲线 ( S(t) )。</li>
-<li>自定义函数 <code>plot_km_logOdds(col)</code> 针对指定分类变量绘制 log-log Kaplan-Meier 曲线。  </li>
-<li>在函数中，计算生存函数转换公式：<br>[<br>\text{failureOdds} &#x3D; \frac{\log(1 - S)}{S}<br>]<br>对应 LaTeX 代码：<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">\text</span>&#123;failureOdds&#125; = <span class="keyword">\frac</span>&#123;<span class="keyword">\log</span>(1 - S)&#125;&#123;S&#125;</span><br></pre></td></tr></table></figure></li>
-<li>曲线绘制后，横轴为 (\log(\text{Time}))，纵轴为 ( \log(1-S) &#x2F; S )（均为英文），通过观察各分组曲线是否平行，帮助评估模型假设是否满足。</li>
+<h4 id="5-2-5-验证模型假设-——-Log-log-Kaplan-Meier-曲线"><a href="#5-2-5-验证模型假设-——-Log-log-Kaplan-Meier-曲线" class="headerlink" title="5.2.5 验证模型假设 —— Log-log Kaplan-Meier 曲线"></a>5.2.5 验证模型假设 —— Log-log Kaplan-Meier 曲线</h4><ul>
+<li><p>为验证 AFT 模型的假设（例如比例赔率假设），代码首先利用 Kaplan-Meier 方法拟合总体生存函数，得到生存曲线 $ S(t) $。</p>
+</li>
+<li><p>自定义函数 <code>plot_km_logOdds(col)</code> 针对指定分类变量绘制 log-log Kaplan-Meier 曲线。  </p>
+</li>
+<li><p>在函数中，计算生存函数转换公式：<br>$$<br>\text{failureOdds} &#x3D; \frac{\log(1 - S)}{S}<br>$$</p>
+</li>
+<li><p>曲线绘制后，横轴为 $\log(\text{Time})$，纵轴为 $ \log(1-S) &#x2F; S $，通过观察各分组曲线是否平行，帮助评估模型假设是否满足。</p>
+</li>
 </ul>
-<h2 id="3-输出结果解读"><a href="#3-输出结果解读" class="headerlink" title="3. 输出结果解读"></a>3. 输出结果解读</h2><h3 id="3-1-模型统计摘要"><a href="#3-1-模型统计摘要" class="headerlink" title="3.1 模型统计摘要"></a>3.1 模型统计摘要</h3><ul>
+<h3 id="5-3-输出结果解读"><a href="#5-3-输出结果解读" class="headerlink" title="5.3. 输出结果解读"></a>5.3. 输出结果解读</h3><h4 id="5-3-1-模型统计摘要"><a href="#5-3-1-模型统计摘要" class="headerlink" title="5.3.1 模型统计摘要"></a>5.3.1 模型统计摘要</h4><ul>
 <li>输出显示共有 3351 个观察值，1556 个事件（客户流失）。</li>
 <li>每个变量的 p 值均小于 0.005，表明所有协变量在统计上均显著。</li>
-<li>Risk factor（即 ( \exp(\text{coef}) )）的数值解释：<ul>
-<li>如 <code>internetservice_DSL</code> 的 ( \exp(0.38) \approx 1.47 ) 表示 DSL 用户的流失风险相比基线加速因子增加 47%（实际上意味着其生存时间相对缩短）。</li>
+<li>Risk factor（即 $ \exp(\text{coef}) $）的数值解释：<ul>
+<li>如 <code>internetservice_DSL</code> 的 $ \exp(0.38) \approx 1.47 $ 表示 DSL 用户的流失风险相比基线加速因子增加 47%（实际上意味着其生存时间相对缩短）。</li>
 </ul>
 </li>
 <li>模型的 Concordance 为 0.73，说明模型具有较好的排序能力。</li>
 </ul>
-<h3 id="3-2-中位生存时间"><a href="#3-2-中位生存时间" class="headerlink" title="3.2 中位生存时间"></a>3.2 中位生存时间</h3><ul>
+<h4 id="5-3-2-中位生存时间"><a href="#5-3-2-中位生存时间" class="headerlink" title="5.3.2 中位生存时间"></a>5.3.2 中位生存时间</h4><ul>
 <li>输出 “中位生存时间: 135.51” 表示在当前模型下，50% 的客户预期在 135.51 个月内（大约 11 年多）达到流失事件，这里主要体现了 AFT 模型的参数效果，通常用于比较不同模型或方案下的客户寿命。</li>
 </ul>
-<h3 id="3-3-模型拟合图"><a href="#3-3-模型拟合图" class="headerlink" title="3.3 模型拟合图"></a>3.3 模型拟合图</h3><ul>
+<h4 id="5-3-3-模型拟合图"><a href="#5-3-3-模型拟合图" class="headerlink" title="5.3.3 模型拟合图"></a>5.3.3 模型拟合图</h4><ul>
 <li>图中横轴显示 “Duration (Months)”，纵轴显示 “Log(Hazard)”。  </li>
-<li>通过该图可以观察模型如何对风险随时间的变化做出拟合。如果拟合曲线较为平滑，则说明模型在该分布假设下表现较为合理。<br><img src="/./images/4.1.png" alt="数据分析图表"></li>
+<li>通过该图可以观察模型如何对风险随时间的变化做出拟合。如果拟合曲线较为平滑，则说明模型在该分布假设下表现较为合理。<br><img src="/images/4.1.png" alt="数据分析图表"></li>
 </ul>
-<h3 id="3-4-Log-log-Kaplan-Meier-曲线图解读"><a href="#3-4-Log-log-Kaplan-Meier-曲线图解读" class="headerlink" title="3.4 Log-log Kaplan-Meier 曲线图解读"></a>3.4 Log-log Kaplan-Meier 曲线图解读</h3><ul>
+<h4 id="5-3-4-Log-log-Kaplan-Meier-曲线图解读"><a href="#5-3-4-Log-log-Kaplan-Meier-曲线图解读" class="headerlink" title="5.3.4 Log-log Kaplan-Meier 曲线图解读"></a>5.3.4 Log-log Kaplan-Meier 曲线图解读</h4><ul>
 <li>对于每个分组（例如 partner、multiplelines、internetservice 等），绘制的 log-log 曲线可以直观展示：<ul>
-<li>横轴为 (\log(\text{Time}))：时间的对数值；</li>
-<li>纵轴为 ( \log(1-S)&#x2F;S )。</li>
+<li>横轴为 $\log(\text{Time})$：时间的对数值；</li>
+<li>纵轴为 $ \log(1-S)&#x2F;S $。</li>
 </ul>
 </li>
-<li>如果不同分组的曲线大致平行，则支持模型假设（例如，比例赔率假设）成立；若出现明显不平行或交叉，则可能提示需要对模型进行调整，如分层或引入时间依赖协变量。<br><img src="/./images/4.2.png" alt="数据分析图表"><br><img src="/./images/4.3.png" alt="数据分析图表"><br><img src="/./images/4.4.png" alt="数据分析图表"><br><img src="/./images/4.5.png" alt="数据分析图表"><br><img src="/./images/4.6.png" alt="数据分析图表"><br><img src="/./images/4.7.png" alt="数据分析图表"><br><img src="/./images/4.8.png" alt="数据分析图表"><br><img src="/./images/4.9.png" alt="数据分析图表"></li>
+<li>如果不同分组的曲线大致平行，则支持模型假设（例如，比例赔率假设）成立；若出现明显不平行或交叉，则可能提示需要对模型进行调整，如分层或引入时间依赖协变量。<br><img src="/images/4.2.png" alt="数据分析图表"><br><img src="/images/4.3.png" alt="数据分析图表"><br><img src="/images/4.4.png" alt="数据分析图表"><br><img src="/images/4.5.png" alt="数据分析图表"><br><img src="/images/4.6.png" alt="数据分析图表"><br><img src="/images/4.7.png" alt="数据分析图表"><br><img src="/images/4.8.png" alt="数据分析图表"><br><img src="/images/4.9.png" alt="数据分析图表"></li>
 </ul>
-<h3 id="3-5-总结"><a href="#3-5-总结" class="headerlink" title="3.5 总结"></a>3.5 总结</h3><p>该部分工作通过 Log-Logistic AFT 模型详细展示了如何对客户流失数据进行参数化生存分析。输出的模型摘要和中位生存时间为业务决策提供了数据依据，同时通过多个图表帮助直观验证模型假设。</p>
+<h4 id="5-3-5-总结"><a href="#5-3-5-总结" class="headerlink" title="5.3.5 总结"></a>5.3.5 总结</h4><p>该部分工作通过 Log-Logistic AFT 模型详细展示了如何对客户流失数据进行参数化生存分析。输出的模型摘要和中位生存时间为业务决策提供了数据依据，同时通过多个图表帮助直观验证模型假设。</p>
 <hr>
-<h1 id="第五块报告-——-Customer-Lifetime-Value-CLTV-分析"><a href="#第五块报告-——-Customer-Lifetime-Value-CLTV-分析" class="headerlink" title="第五块报告 —— Customer Lifetime Value (CLTV) 分析"></a>第五块报告 —— Customer Lifetime Value (CLTV) 分析</h1><h2 id="1-代码目的-1"><a href="#1-代码目的-1" class="headerlink" title="1. 代码目的"></a>1. 代码目的</h2><p>本部分代码旨在基于 Cox 比例风险模型的输出和生存函数预测，进一步构造客户生命周期价值（Customer Lifetime Value, CLTV）仪表板。主要工作包括：</p>
+<h2 id="6-Customer-Lifetime-Value-CLTV-分析"><a href="#6-Customer-Lifetime-Value-CLTV-分析" class="headerlink" title="6. Customer Lifetime Value (CLTV) 分析"></a>6. Customer Lifetime Value (CLTV) 分析</h2><h3 id="6-1-代码目的"><a href="#6-1-代码目的" class="headerlink" title="6.1 代码目的"></a>6.1 代码目的</h3><p>本部分旨在基于 Cox 比例风险模型的输出和生存函数预测，进一步构造客户生命周期价值（Customer Lifetime Value, CLTV）仪表板。主要工作包括：</p>
 <ol>
 <li>从 Spark 加载银级数据并转换为 Pandas DataFrame。</li>
 <li>对指定的分类变量进行 One-Hot 编码，构造用于 Cox 模型的数据框，并拟合模型。</li>
@@ -386,41 +373,45 @@
 <li>基于模型预测结果，计算每月预期利润及其净现值（NPV），进而计算累计 NPV。</li>
 <li>绘制累计 NPV 条形图及生存概率曲线图供仪表板展示。</li>
 </ol>
-<h2 id="2-关键思路与实现-1"><a href="#2-关键思路与实现-1" class="headerlink" title="2. 关键思路与实现"></a>2. 关键思路与实现</h2><h3 id="2-1-数据加载与-One-Hot-编码"><a href="#2-1-数据加载与-One-Hot-编码" class="headerlink" title="2.1 数据加载与 One-Hot 编码"></a>2.1 数据加载与 One-Hot 编码</h3><ul>
+<h3 id="6-2-关键思路与实现"><a href="#6-2-关键思路与实现" class="headerlink" title="6.2 关键思路与实现"></a>6.2 关键思路与实现</h3><h4 id="6-2-1-数据加载与-One-Hot-编码"><a href="#6-2-1-数据加载与-One-Hot-编码" class="headerlink" title="6.2.1 数据加载与 One-Hot 编码"></a>6.2.1 数据加载与 One-Hot 编码</h4><ul>
 <li><strong>数据加载</strong><br>使用 <code>spark.table(&quot;silver_monthly_customers&quot;).toPandas()</code> 将银级数据加载为 Pandas DataFrame。</li>
 <li><strong>One-Hot 编码</strong><br>对与模型相关的变量（dependents, internetservice, onlinebackup, techsupport, paperlessbilling）进行 One-Hot 编码。注意：由于原数据列均为小写，所以直接使用小写名称。</li>
 <li><strong>构造模型数据框</strong><br>从编码后的 DataFrame 中选取 <code>churn</code>、<code>tenure</code> 以及关键的虚拟变量（如 <code>dependents_Yes</code>、<code>internetservice_DSL</code>、<code>onlinebackup_Yes</code>、<code>techsupport_Yes</code>）构造 Cox 模型输入数据框，并将 <code>churn</code> 转换为 float 型。</li>
 </ul>
-<h3 id="2-2-拟合-Cox-比例风险模型"><a href="#2-2-拟合-Cox-比例风险模型" class="headerlink" title="2.2 拟合 Cox 比例风险模型"></a>2.2 拟合 Cox 比例风险模型</h3><ul>
+<h4 id="6-2-2-拟合-Cox-比例风险模型"><a href="#6-2-2-拟合-Cox-比例风险模型" class="headerlink" title="6.2.2 拟合 Cox 比例风险模型"></a>6.2.2 拟合 Cox 比例风险模型</h4><ul>
 <li>使用 <code>CoxPHFitter</code> 拟合 Cox 模型，输出模型统计摘要和风险比图。  </li>
 <li>模型输出为之后 CLTV 分析提供了生存函数预测的基础。</li>
 </ul>
-<h3 id="2-3-模拟仪表板参数"><a href="#2-3-模拟仪表板参数" class="headerlink" title="2.3 模拟仪表板参数"></a>2.3 模拟仪表板参数</h3><ul>
+<h4 id="6-2-3-模拟仪表板参数"><a href="#6-2-3-模拟仪表板参数" class="headerlink" title="6.2.3 模拟仪表板参数"></a>6.2.3 模拟仪表板参数</h4><ul>
 <li>因原代码中使用 Databricks 的 widgets，本代码使用 Python 中的字典模拟相关参数。  </li>
 <li>模拟参数包括各模型变量的激活状态（设为 0 表示未激活）和“ internal rate of return”，默认为 10% 年化。</li>
 <li>辅助函数 <code>get_widget_values()</code> 返回一个 DataFrame，其列仅包括模型所使用的变量，供生存函数预测使用。</li>
 </ul>
-<h3 id="2-4-计算-CLTV"><a href="#2-4-计算-CLTV" class="headerlink" title="2.4 计算 CLTV"></a>2.4 计算 CLTV</h3><ul>
+<h4 id="6-2-4-计算-CLTV"><a href="#6-2-4-计算-CLTV" class="headerlink" title="6.2.4 计算 CLTV"></a>6.2.4 计算 CLTV</h4><ul>
 <li>利用训练好的 Cox 模型及模拟输入，通过 <code>cph.predict_survival_function</code> 预测生存概率曲线。</li>
 <li>在构造的生存函数表中：<ul>
-<li>第一行固定为 1（表示初始时刻 t&#x3D;0 生存概率为 1）。</li>
-<li>按照时间（合同月份），计算每个月的平均预期利润 &#x3D; 生存概率 × 每月固定利润（此处设为 30）。</li>
-<li>利用内部收益率（折现率）计算每月预期利润的净现值（NPV），公式为：<br>[<br>\text{NPV} &#x3D; \frac{\text{Avg Expected Monthly Profit}}{(1 + \text{月利率})^{\text{Contract Month}}}<br>]<br>对应 LaTeX 代码：<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">\text</span>&#123;NPV&#125; = <span class="keyword">\frac</span>&#123;<span class="keyword">\text</span>&#123;Avg Expected Monthly Profit&#125;&#125;&#123;(1 + r)<span class="built_in">^</span>&#123;<span class="keyword">\text</span>&#123;Contract Month&#125;&#125;&#125;</span><br></pre></td></tr></table></figure></li>
-<li>计算累计 NPV 作为评估客户生命周期价值的指标。</li>
+<li><p>第一行固定为 1（表示初始时刻 t&#x3D;0 生存概率为 1）。</p>
+</li>
+<li><p>按照时间（合同月份），计算每个月的平均预期利润 &#x3D; 生存概率 × 每月固定利润（此处设为 30）。</p>
+</li>
+<li><p>利用内部收益率（折现率）计算每月预期利润的净现值（NPV），公式为：<br>$$<br>\text{NPV} &#x3D; \frac{\text{Avg Expected Monthly Profit}}{(1 + \text{月利率})^{\text{Contract Month}}}<br>$$</p>
+</li>
+<li><p>计算累计 NPV 作为评估客户生命周期价值的指标。</p>
+</li>
 </ul>
 </li>
 </ul>
-<h3 id="2-5-图表绘制"><a href="#2-5-图表绘制" class="headerlink" title="2.5 图表绘制"></a>2.5 图表绘制</h3><ul>
+<h4 id="6-2-5-图表绘制"><a href="#6-2-5-图表绘制" class="headerlink" title="6.2.5 图表绘制"></a>6.2.5 图表绘制</h4><ul>
 <li><p><strong>累计 NPV 条形图</strong><br>对于 12、24、36 个月，绘制条形图。图中横轴显示 “Contract Period”，纵轴显示 “Cumulative NPV”，标题为 “Cumulative NPV at Key Contract Months”。<br>图表直观展示了在不同合同月数下的累计净现值，帮助业务判断对客户的最大投入。</p>
 </li>
 <li><p><strong>生存概率曲线图</strong><br>绘制生存概率曲线，横轴为 “Contract Month”，纵轴为 “Survival Probability”，标题为 “Survival Probability Curve”。<br>该图展示了随合同月份推移，生存概率的下降趋势，反映客户续订和流失情况。</p>
 </li>
 </ul>
-<h2 id="3-输出结果解读-1"><a href="#3-输出结果解读-1" class="headerlink" title="3. 输出结果解读"></a>3. 输出结果解读</h2><h3 id="3-1-模型摘要"><a href="#3-1-模型摘要" class="headerlink" title="3.1 模型摘要"></a>3.1 模型摘要</h3><ul>
+<h3 id="6-3-输出结果解读"><a href="#6-3-输出结果解读" class="headerlink" title="6.3 输出结果解读"></a>6.3 输出结果解读</h3><h4 id="6-3-1-模型摘要"><a href="#6-3-1-模型摘要" class="headerlink" title="6.3.1 模型摘要"></a>6.3.1 模型摘要</h4><ul>
 <li>输出的 Cox 模型摘要中，各变量均显示了统计指标（coef、exp(coef)、p 值等）。所有 p 值均小于 0.005，提示这些变量均显著，模型具有较好的预测能力。</li>
 <li>模型的 Concordance 值为 0.64，表明模型对数据排序有一定的预测准确性。</li>
 </ul>
-<h3 id="3-2-仪表板数据表"><a href="#3-2-仪表板数据表" class="headerlink" title="3.2 仪表板数据表"></a>3.2 仪表板数据表</h3><ul>
+<h4 id="6-3-2-仪表板数据表"><a href="#6-3-2-仪表板数据表" class="headerlink" title="6.3.2 仪表板数据表"></a>6.3.2 仪表板数据表</h4><ul>
 <li>输出的仪表板数据表显示：<ul>
 <li>“Survival Probability” 随着合同月份增加逐步下降，符合常理；</li>
 <li>“Monthly Profit for the Selected Plan” 固定为 30；</li>
@@ -431,7 +422,7 @@
 </li>
 </ul>
 <p>例如，合同第 12 个月时，累计 NPV 为 251.40，表示在 12 个月内预计客户为企业带来的净现值约为 251.40（单位视具体业务而定）。</p>
-<h3 id="3-3-图表解读"><a href="#3-3-图表解读" class="headerlink" title="3.3 图表解读"></a>3.3 图表解读</h3><ul>
+<h4 id="6-3-3-图表解读"><a href="#6-3-3-图表解读" class="headerlink" title="6.3.3 图表解读"></a>6.3.3 图表解读</h4><ul>
 <li><p><strong>累计 NPV 条形图</strong><br>图表显示三根条形分别代表 12、24、36 个月下的累计 NPV。  </p>
 <ul>
 <li>横轴标签 “12 Months”, “24 Months”, “36 Months” 表示对应合同月份；  </li>
@@ -445,12 +436,32 @@
 </ul>
 </li>
 </ul>
-<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4. 总结"></a>4. 总结</h2><p>通过 Accelerated Failure Time 模型分析，我们可以获得有关客户生存时间的参数化估计（如中位生存时间 135.51 个月）以及各协变量对生存时间的影响（通过回归系数和风险加速因子）。同时，通过 Log-log Kaplan-Meier 曲线，能够检查模型假设是否满足。<br>在 CLTV 分析部分，基于 Cox 模型预测的生存概率，我们计算了每月预期利润及其净现值，并求累计 NPV，生成仪表板表格和图表，直观反映客户生命周期价值，便于企业制定营销和客户维护策略。</p>
+<h3 id="6-4-总结"><a href="#6-4-总结" class="headerlink" title="6.4 总结"></a>6.4 总结</h3><p>通过 Accelerated Failure Time 模型分析，可以获得有关客户生存时间的参数化估计（如中位生存时间 135.51 个月）以及各协变量对生存时间的影响（通过回归系数和风险加速因子）。同时，通过 Log-log Kaplan-Meier 曲线，能够检查模型假设是否满足。<br>在 CLTV 分析部分，基于 Cox 模型预测的生存概率，计算了每月预期利润及其净现值，并求累计 NPV，生成仪表板表格和图表，直观反映客户生命周期价值，便于企业制定营销和客户维护策略。</p>
+<h2 id="7-总结与建议"><a href="#7-总结与建议" class="headerlink" title="7. 总结与建议"></a>7. 总结与建议</h2><p>本报告通过以下五个部分详细描述了数据加载与预处理、Kaplan-Meier 生存分析、Cox 比例风险模型、Accelerated Failure Time 模型以及 CLTV 分析的全过程。总体结论如下：</p>
+<ol>
+<li><p><strong>数据预处理</strong>：<br>从原始数据中构建青铜级与银级数据，为后续模型分析奠定了坚实的数据基础。</p>
+</li>
+<li><p><strong>生存分析</strong>：<br>通过 Kaplan-Meier 方法与 Cox 模型，分别获得了总体生存曲线、中位生存时间及各协变量对风险的影响，为客户流失风险评估提供了直观指标。</p>
+</li>
+<li><p><strong>参数化生存模型</strong>：<br>AFT 模型详细揭示了客户生存时间的加速效应，通过中位生存时间及模型拟合图，帮助理解变量对生存时间的影响。</p>
+</li>
+<li><p><strong>客户生命周期价值</strong>：<br>基于 Cox 模型预测的生存概率，计算了每月预期利润的净现值，并求得累计 NPV，直观反映客户整体价值，有助于企业在客户保留策略和营销规划中做出数据驱动的决策。</p>
+</li>
+<li><p><strong>模型检验与图表解读</strong>：<br>多幅图表（生存曲线、风险比图、拟合图、Log-log 曲线及 CLTV 分析图）为模型输出提供了直观验证，对模型假设检验和变量解读均起到关键作用。</p>
+</li>
+</ol>
+<p>建议后续在模型应用时：</p>
+<ul>
+<li>持续优化数据预处理方法，确保数据质量；</li>
+<li>根据比例风险假设检验结果，必要时对模型进行调整（例如分层或引入时间依赖变量）；</li>
+<li>定期更新数据和模型，动态监控客户流失与生命周期价值。</li>
+</ul>
+<hr>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2025/04/13/%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/" data-id="cm9fq70nr00011sv81oxsbop6" data-title="生存分析报告" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2025/04/13/%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/" data-id="cm9fr50l10001awv832cahv9r" data-title="生存分析报告" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
